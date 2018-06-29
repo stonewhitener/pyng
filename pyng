@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import argparse
+import socket
+import struct
+
+from ethernet import *
+
+
+def main(target, interface):
+    # Create a layer 2 raw socket
+    with socket.socket(socket.AF_PACKET, socket.SOCK_RAW) as client_socket:
+        # Bind an interface
+        client_socket.bind((interface, 0))
+        # Send a frame
+        client_socket.sendall(
+            # Pack in network byte order
+            struct.pack('!6s6sH2s',
+                        eui48_to_bytes(target),             # Destination MAC address
+                        get_hardware_address(interface),    # Source MAC address
+                        ETH_P_802_EX1,                      # Ethernet type
+                        'Hi'.encode()))                     # Payload
+        print('Sent!')
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='pyng client')
+    parser.add_argument('target', type=str, help='target MAC address')
+    parser.add_argument('interface', type=str, help='source interface name')
+    args = parser.parse_args()
+    main(args.target, args.interface)
