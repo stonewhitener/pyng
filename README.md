@@ -1,6 +1,6 @@
 # pyng
 
-Reachability check tool using Ethernet
+Reachability check tool over Ethernet
 
 ## Requirements
 
